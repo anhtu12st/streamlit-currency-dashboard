@@ -104,6 +104,53 @@ def draw_multi_line_charts(st, data: DataFrame):
     # forecast_dates = pd.date_range(start=df.index.max() + pd.DateOffset(days=1), periods=n_forecast, freq='D')
     # fig.add_trace(go.Scatter(x=forecast_dates, y=forecast_values, mode='lines', name='Forecast', line=dict(dash='dot')))
 
+def draw_multi_line_charts_bollinger_bands(st, data: pd.DataFrame):
+    data = data.set_index("Date")
+    
+    # Calculate Bollinger Bands
+    window = 10  # You can adjust the window size
+    data['MA'] = data.iloc[:, 0].rolling(window=window).mean()
+    data['Upper'] = data['MA'] + 2 * data.iloc[:, 0].rolling(window=window).std()
+    data['Lower'] = data['MA'] - 2 * data.iloc[:, 0].rolling(window=window).std()
+    
+    fig = go.Figure()
+
+    # Plot the main line
+    fig.add_trace(
+        go.Scatter(x=data.index, y=data.iloc[:, 0], mode='lines+markers', name=data.columns[0],
+                   yaxis='y1', hovertemplate='Date: %{x|%Y-%m-%d}<br>Value: %{y:.2f}<extra></extra>'),
+    )
+    
+    # Plot Bollinger Bands and fill the area between them
+    fig.add_trace(
+        go.Scatter(x=data.index, y=data['Upper'], mode='lines', line=dict(color='red'), name='Upper Bollinger Band',
+                   yaxis='y1', hoverinfo='none')
+    )
+    fig.add_trace(
+        go.Scatter(x=data.index, y=data['Lower'], mode='lines', line=dict(color='red'), name='Lower Bollinger Band',
+                   yaxis='y1', hoverinfo='none', fill='tonexty', fillcolor='rgba(255, 0, 0, 0.2)')
+    )
+
+    # Plot the Moving Average line
+    fig.add_trace(
+        go.Scatter(x=data.index, y=data['MA'], mode='lines', line=dict(color='blue'), name='Moving Average',
+                   yaxis='y1', hoverinfo='none')
+    )
+
+    fig.update_layout(
+        xaxis_title='Date',
+        hoverlabel=dict(
+            bgcolor='white',
+            bordercolor='gray',
+            font=dict(color='black')
+        ),
+        yaxis=dict(
+            title=data.columns[0],
+        ),
+    )
+    
+    return fig
+
 
 def draw_multi_vertical_bar_charts(st, data: DataFrame):
     data = data.set_index("Date")

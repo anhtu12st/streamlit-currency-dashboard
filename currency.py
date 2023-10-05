@@ -49,9 +49,39 @@ class Currency:
 
 
 if __name__ == "__main__":
-    currency = Currency()
+    df = df_data.set_index('Date')
+    # Define the date ranges
+    date_ranges = ["Week", "1 Month", "3 Months", "6 Months", "1 Year"]
+    date_range_values = [7, 30, 90, 180, 365]  # corresponding to the number of days in each range
 
-    print(currency.get_timeseries_data(start_date="2023-01-01", end_date="2023-09-01"))
+    result_dict = {}
+
+    for i, range_name in enumerate(date_ranges):
+        start_date = df.index[-1] - pd.DateOffset(days=date_range_values[i] - 1)
+        end_date = df.index[-1]
+
+        # Filter the data within the date range
+        df_filtered = df.loc[start_date:end_date]
+
+        # Calculate daily percentage change for the filtered data
+        percentage_change = df_filtered.ffill().pct_change() * 100
+
+        # Calculate the average daily percentage change
+        average_daily_change = percentage_change.mean()
+        top_currencies = average_daily_change.nlargest(10)
+
+        result_dict[range_name] = top_currencies.to_dict()
+
+    # Write the result to a JSON file
+    with open('result_by_date_range.json', 'w') as json_file:
+        json.dump(result_dict, json_file)
+
+
+
+
+    # currency = Currency()
+
+    # print(currency.get_timeseries_data(start_date="2023-01-01", end_date="2023-09-01"))
     # print(currency.get_historical_data(date="2020-01-01"))
     # print(currency.convert_currency(date="2020-01-01"))
     # symbols = list(currency.get_symbols().keys())
