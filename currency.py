@@ -1,12 +1,10 @@
 from time import sleep
 import requests
 import json
-import csv
 import pandas as pd
 
 
-YOUR_ACCESS_KEY="2ead763041515d4203a714dd6d62c9a3"
-df_data = pd.read_csv('./exchange_rates.csv', parse_dates=True)
+df_data = pd.read_csv('./data/exchange_rates.csv', parse_dates=True)
 df_data['Date'] = pd.to_datetime(df_data['Date'])
 
 
