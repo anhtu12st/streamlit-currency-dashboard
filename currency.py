@@ -54,7 +54,7 @@ if __name__ == "__main__":
     date_ranges = ["Week", "1 Month", "3 Months", "6 Months", "1 Year"]
     date_range_values = [7, 30, 90, 180, 365]  # corresponding to the number of days in each range
 
-    result_dict = {}
+    result_increase_dict, result_decrease_dict = {}, {}
 
     for i, range_name in enumerate(date_ranges):
         start_date = df.index[-1] - pd.DateOffset(days=date_range_values[i] - 1)
@@ -68,13 +68,18 @@ if __name__ == "__main__":
 
         # Calculate the average daily percentage change
         average_daily_change = percentage_change.mean()
-        top_currencies = average_daily_change.nlargest(10)
+        top_increase_currencies = average_daily_change.nlargest(10)
+        top_decrease_currencies = average_daily_change.nsmallest(10)
 
-        result_dict[range_name] = top_currencies.to_dict()
+        result_increase_dict[range_name] = top_increase_currencies.to_dict()
+        result_decrease_dict[range_name] = top_decrease_currencies.to_dict()
 
     # Write the result to a JSON file
-    with open('result_by_date_range.json', 'w') as json_file:
-        json.dump(result_dict, json_file)
+    with open('result_increase_by_date_range.json', 'w') as json_file:
+        json.dump(result_increase_dict, json_file)
+
+    with open('result_decrease_by_date_range.json', 'w') as json_file:
+        json.dump(result_decrease_dict, json_file)
 
 
 
