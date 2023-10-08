@@ -120,3 +120,18 @@ if __name__ == "__main__":
     #         data = currency.get_timeseries_data(start_date="2023-01-01", end_date="2023-09-25", base=symbol, symbols=symbols)
     #         for date, rates in data.items():
     #             csv_writer.writerow([date] + list(rates.get(s) if rates.get(s) else "" for s in symbols))
+
+    # # Read the CSV file into a pandas DataFrame
+    # df = pd.read_csv('./data/exchange_rates.csv')
+
+    # # Duplicate Removal
+    # df = df.drop_duplicates(subset=['Date'], keep='last')
+
+    # # Data Continuity
+    # min_date = df['Date'].min()
+    # max_date = df['Date'].max()
+    # all_dates = pd.date_range(start=min_date, end=max_date)
+
+    # df.set_index('Date', inplace=True)
+    # df = df.reindex(all_dates)
+    # df = df.reset_index()
